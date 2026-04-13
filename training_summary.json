@@ -1,0 +1,208 @@
+{
+  "project_name": "Intelligent Network Monitoring System",
+  "dataset_name": "UNSW-NB15",
+  "detected_attack_target": "attack_cat",
+  "feature_count": 42,
+  "numeric_columns": [
+    "dur",
+    "spkts",
+    "dpkts",
+    "sbytes",
+    "dbytes",
+    "rate",
+    "sttl",
+    "dttl",
+    "sload",
+    "dload",
+    "sloss",
+    "dloss",
+    "sinpkt",
+    "dinpkt",
+    "sjit",
+    "djit",
+    "swin",
+    "stcpb",
+    "dtcpb",
+    "dwin",
+    "tcprtt",
+    "synack",
+    "ackdat",
+    "smean",
+    "dmean",
+    "trans_depth",
+    "response_body_len",
+    "ct_srv_src",
+    "ct_state_ttl",
+    "ct_dst_ltm",
+    "ct_src_dport_ltm",
+    "ct_dst_sport_ltm",
+    "ct_dst_src_ltm",
+    "is_ftp_login",
+    "ct_ftp_cmd",
+    "ct_flw_http_mthd",
+    "ct_src_ltm",
+    "ct_srv_dst",
+    "is_sm_ips_ports"
+  ],
+  "categorical_columns": [
+    "proto",
+    "service",
+    "state"
+  ],
+  "modules": {
+    "traffic_condition": {
+      "display_name": "Traffic Condition",
+      "description": "Classifies network load as Low, Medium, or Heavy using traffic-rate and packet-volume features.",
+      "target_type": "derived_multiclass",
+      "source_columns": [
+        "rate",
+        "sload",
+        "dload",
+        "spkts",
+        "dpkts",
+        "sbytes",
+        "dbytes"
+      ],
+      "derivation": {
+        "score_formula": "Average standardized log-scaled traffic features",
+        "low_threshold": -0.3983658070197998,
+        "high_threshold": 0.010184706076403816
+      },
+      "metrics": {
+        "accuracy": 0.9943880780878402,
+        "precision_macro": 0.9942593982097341,
+        "recall_macro": 0.9942528487302299,
+        "f1_macro": 0.9942558517228012,
+        "confusion_matrix": [
+          [
+            58917,
+            0,
+            227
+          ],
+          [
+            0,
+            61818,
+            246
+          ],
+          [
+            314,
+            197,
+            53622
+          ]
+        ],
+        "class_labels": [
+          "Heavy",
+          "Low",
+          "Medium"
+        ]
+      }
+    },
+    "fault_detection": {
+      "display_name": "Fault Detection",
+      "description": "Detects Normal or Faulty network states using packet loss, jitter, and TCP timing indicators.",
+      "target_type": "derived_binary",
+      "source_columns": [
+        "sloss",
+        "dloss",
+        "sjit",
+        "djit",
+        "tcprtt",
+        "synack",
+        "ackdat"
+      ],
+      "derivation": {
+        "score_formula": "Average standardized log-scaled fault indicators",
+        "threshold": 0.9637032355912183
+      },
+      "metrics": {
+        "accuracy": 0.9938462766837192,
+        "precision_macro": 0.9914857363981806,
+        "recall_macro": 0.9937537831883536,
+        "f1_macro": 0.9926106003226673,
+        "confusion_matrix": [
+          [
+            51280,
+            334
+          ],
+          [
+            745,
+            122982
+          ]
+        ],
+        "class_labels": [
+          "Faulty",
+          "Normal"
+        ]
+      }
+    },
+    "connectivity_quality": {
+      "display_name": "Connectivity Quality",
+      "description": "Labels links as Good or Poor based on timing, jitter, and loss-related connectivity indicators.",
+      "target_type": "derived_binary",
+      "source_columns": [
+        "sloss",
+        "dloss",
+        "sjit",
+        "djit",
+        "sinpkt",
+        "dinpkt",
+        "tcprtt"
+      ],
+      "derivation": {
+        "score_formula": "Average standardized log-scaled connectivity impairment indicators",
+        "threshold": 0.7504968149932254
+      },
+      "metrics": {
+        "accuracy": 0.9975989643038422,
+        "precision_macro": 0.9972595813010018,
+        "recall_macro": 0.9977643313862081,
+        "f1_macro": 0.9975100945679407,
+        "confusion_matrix": [
+          [
+            104023,
+            324
+          ],
+          [
+            97,
+            70897
+          ]
+        ],
+        "class_labels": [
+          "Good",
+          "Poor"
+        ]
+      }
+    },
+    "abnormal_behavior": {
+      "display_name": "Abnormal Behavior",
+      "description": "Detects whether the observed traffic is Normal or Abnormal using the original UNSW-NB15 attack labeling.",
+      "target_type": "original_binary",
+      "source_columns": [
+        "label"
+      ],
+      "derivation": {
+        "source_target": "label"
+      },
+      "metrics": {
+        "accuracy": 0.8985804803212026,
+        "precision_macro": 0.8782290874157488,
+        "recall_macro": 0.9205618188785556,
+        "f1_macro": 0.8904969160052981,
+        "confusion_matrix": [
+          [
+            102599,
+            16742
+          ],
+          [
+            1041,
+            54959
+          ]
+        ],
+        "class_labels": [
+          "Abnormal",
+          "Normal"
+        ]
+      }
+    }
+  }
+}
